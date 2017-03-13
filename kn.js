@@ -10,7 +10,7 @@ var makeDot = function(x, y) {
 
     dot.setAttribute("cx", x);
     dot.setAttribute("cy", y);
-    dot.setAttribute("r", 30);
+    dot.setAttribute("r", 20);
     dot.setAttribute("fill", "green");
 
     dot.xv = 1;
@@ -36,6 +36,13 @@ var moveDot = function(e) {
 	
 	for( var i = 0; i < circles.length; i++ ) {
 
+	    var r = parseInt( circles[i].getAttribute("r") );
+
+	    if( r <= 1 ) {
+		svg.removeChild( circles[i] );
+		break;
+	    }
+
 	    var x = parseInt( circles[i].getAttribute("cx") );
 	    var y = parseInt( circles[i].getAttribute("cy") );
 
@@ -45,8 +52,26 @@ var moveDot = function(e) {
 	    if( y < 30 || y > svg.clientHeight - 30 )
 		circles[i].yv *= -1;
 
-	    circles[i].setAttribute( "cx", x + circles[i].xv );
-	    circles[i].setAttribute( "cy", y + circles[i].yv );
+	    x += circles[i].xv; circles[i].setAttribute( "cx", x );
+	    y += circles[i].yv; circles[i].setAttribute( "cy", y );
+
+	    var x2 = svg.clientWidth / 2;
+	    var y2 = svg.clientHeight / 2;
+	    r = r / 2;
+
+	    if( Math.abs(x2 - x) <= 5 && Math.abs(y2 - y) <= 5 ) {
+
+		circles[i].setAttribute("r", r);
+
+		var newDot = makeDot(x, y);
+		
+		newDot.setAttribute("xv", -1 * circles[i].xv);
+		newDot.setAttribute("yv", -1 * circles[i].yv);
+		newDot.setAttribute("r", r);
+
+		svg.appendChild(newDot);
+		
+	    }
 
 	}
 
@@ -55,8 +80,6 @@ var moveDot = function(e) {
     }
 
     woo();
-
-    //setInterval( woo, 15 );
 	
 }
 
